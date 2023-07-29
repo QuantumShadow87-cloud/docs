@@ -25,9 +25,6 @@ Install the following build tools to configure your development environment.
 <p>Requires Xcode 9.2 or later.</p>
 <p>Install using the <a href="https://brew.sh/" class="external">Homebrew</a> package manager:</p>
 <pre class="prettyprint lang-bsh">
-<code class="devsite-terminal">/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"</code>
-<code class="devsite-terminal">export PATH="/usr/local/opt/python/libexec/bin:$PATH"</code>
-<code class="devsite-terminal"># if you are on macOS 10.12 (Sierra) use `export PATH="/usr/local/bin:/usr/local/sbin:$PATH"`</code>
 <code class="devsite-terminal">brew install python</code>
 </pre>
 </section>
@@ -59,6 +56,24 @@ sure to install the correct Bazel version from TensorFlow's
 [.bazelversion](https://github.com/tensorflow/tensorflow/blob/master/.bazelversion)
 file.
 
+### Install Clang (recommended, Linux only)
+
+Clang is a C/C++/Objective-C compiler that is compiled in C++ based on LLVM. It
+is the default compiler to build TensorFlow starting with TensorFlow 2.13. The
+current supported version is LLVM/Clang 16.
+
+[LLVM Debian/Ubuntu nightly packages](https://apt.llvm.org) provide an automatic
+installation script and packages for manual installation on Linux. Make sure you
+run the following command if you manually add llvm apt repository to your
+package sources:
+
+<pre class="prettyprint lang-bsh">
+<code class="devsite-terminal">sudo apt-get update && sudo apt-get install -y llvm-16 clang-16</code>
+</pre>
+
+Alternatively, you can download and unpack the pre-built
+[Clang+LLVM-16 binaries](https://github.com/llvm/llvm-project/releases/tag/llvmorg-16.0.0).
+
 ### Install GPU support (optional, Linux only)
 
 There is *no* GPU support for macOS.
@@ -87,17 +102,16 @@ git checkout <em>branch_name</em>  # r2.2, r2.3, etc.
 </pre>
 
 
-## Optional: Configure the build
+## Configure the build
 
 TensorFlow builds are configured by the `.bazelrc` file in the repository's
 root directory. The `./configure` or `./configure.py` scripts can be used to
 adjust common settings.
 
-If you need to change the configuration, run the `./configure` script from
-the repository's root directory. This script will prompt you for the location of
-TensorFlow dependencies and asks for additional build configuration options
-(compiler flags, for example). Refer to the _Sample session_ section for
-details.
+Please run the `./configure` script from the repository's root directory. This
+script will prompt you for the location of TensorFlow dependencies and asks for
+additional build configuration options (compiler flags, for example). Refer to
+the _Sample session_ section for details.
 
 <pre class="devsite-terminal devsite-click-to-copy">
 ./configure
@@ -117,7 +131,7 @@ session may differ):
 <h4 class="showalways">View sample configuration session</h4>
 <pre class="devsite-terminal">
 ./configure
-You have bazel 5.0.0 installed.
+You have bazel 6.1.0 installed.
 Please specify the location of python. [Default is /Library/Frameworks/Python.framework/Versions/3.9/bin/python3]: 
 
 
@@ -125,16 +139,20 @@ Found possible Python library paths:
   /Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages
 Please input the desired Python library path to use.  Default is [/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages]
 
-Do you wish to build TensorFlow with ROCm support? [y/N]: n
+Do you wish to build TensorFlow with ROCm support? [y/N]:
 No ROCm support will be enabled for TensorFlow.
 
-Do you wish to build TensorFlow with CUDA support? [y/N]: n
+Do you wish to build TensorFlow with CUDA support? [y/N]:
 No CUDA support will be enabled for TensorFlow.
 
-Do you wish to download a fresh release of clang? (Experimental) [y/N]: n
-Clang will not be downloaded.
+Do you want to use Clang to build TensorFlow? [Y/n]:
+Clang will be used to compile TensorFlow.
 
-Please specify optimization flags to use during compilation when bazel option "--config=opt" is specified [Default is -Wno-sign-compare]: n
+Please specify the path to clang executable. [Default is /usr/lib/llvm-16/bin/clang]:
+
+You have Clang 16.0.4 installed.
+
+Please specify optimization flags to use during compilation when bazel option "--config=opt" is specified [Default is -Wno-sign-compare]:
 
 
 Would you like to interactively configure ./WORKSPACE for Android builds? [y/N]: n
@@ -196,22 +214,12 @@ The pip package is build in two steps. A `bazel build` commands creates a
 package.
 
 ### Build the package-builder
+Note: GPU support can be enabled with `cuda=Y` during the `./configure` stage.
 
-Use `bazel build` to create the TensorFlow 2.x package-builder with *CPU-only*
-support:
+Use `bazel build` to create the TensorFlow 2.x package-builder:
 
 <pre class="devsite-terminal devsite-click-to-copy">
 bazel build [--config=option] //tensorflow/tools/pip_package:build_pip_package
-</pre>
-
-#### GPU support
-
-Note: GPU support can be enabled with `cuda=Y` during the `./configure` stage.
-
-To build a TensorFlow package-builder with GPU support:
-
-<pre class="devsite-terminal devsite-click-to-copy">
-bazel build --config=cuda [--config=option] //tensorflow/tools/pip_package:build_pip_package
 </pre>
 
 #### Bazel build options
@@ -224,8 +232,8 @@ for
 Building TensorFlow from source can use a lot of RAM. If your system is
 memory-constrained, limit Bazel's RAM usage with: `--local_ram_resources=2048`.
 
-The [official TensorFlow packages](./pip.md) are built with a GCC toolchain that
-complies with the manylinux2014 package standard.
+The [official TensorFlow packages](./pip.md) are built with a Clang toolchain
+that complies with the manylinux2014 package standard.
 
 ### Build the package
 
@@ -391,6 +399,7 @@ Success: TensorFlow is now installed.
 
 <table>
 <tr><th>Version</th><th>Python version</th><th>Compiler</th><th>Build tools</th></tr>
+<tr><td>tensorflow-2.13.0</td><td>3.8-3.11</td><td>Clang 16.0.0</td><td>Bazel 5.3.0</td></tr>
 <tr><td>tensorflow-2.12.0</td><td>3.8-3.11</td><td>GCC 9.3.1</td><td>Bazel 5.3.0</td></tr>
 <tr><td>tensorflow-2.11.0</td><td>3.7-3.10</td><td>GCC 9.3.1</td><td>Bazel 5.3.0</td></tr>
 <tr><td>tensorflow-2.10.0</td><td>3.7-3.10</td><td>GCC 9.3.1</td><td>Bazel 5.1.1</td></tr>
@@ -426,6 +435,7 @@ Success: TensorFlow is now installed.
 
 <table>
 <tr><th>Version</th><th>Python version</th><th>Compiler</th><th>Build tools</th><th>cuDNN</th><th>CUDA</th></tr>
+<tr><td>tensorflow-2.13.0</td><td>3.8-3.11</td><td>Clang 16.0.0</td><td>Bazel 5.3.0</td><td>8.6</td><td>11.8</td></tr>
 <tr><td>tensorflow-2.12.0</td><td>3.8-3.11</td><td>GCC 9.3.1</td><td>Bazel 5.3.0</td><td>8.6</td><td>11.8</td></tr>
 <tr><td>tensorflow-2.11.0</td><td>3.7-3.10</td><td>GCC 9.3.1</td><td>Bazel 5.3.0</td><td>8.1</td><td>11.2</td></tr>
 <tr><td>tensorflow-2.10.0</td><td>3.7-3.10</td><td>GCC 9.3.1</td><td>Bazel 5.1.1</td><td>8.1</td><td>11.2</td></tr>
@@ -463,6 +473,7 @@ Success: TensorFlow is now installed.
 
 <table>
 <tr><th>Version</th><th>Python version</th><th>Compiler</th><th>Build tools</th></tr>
+<tr><td>tensorflow-2.13.0</td><td>3.8-3.11</td><td>Clang from xcode 10.15</td><td>Bazel 5.3.0</td></tr>
 <tr><td>tensorflow-2.12.0</td><td>3.8-3.11</td><td>Clang from xcode 10.15</td><td>Bazel 5.3.0</td></tr>
 <tr><td>tensorflow-2.11.0</td><td>3.7-3.10</td><td>Clang from xcode 10.14</td><td>Bazel 5.3.0</td></tr>
 <tr><td>tensorflow-2.10.0</td><td>3.7-3.10</td><td>Clang from xcode 10.14</td><td>Bazel 5.1.1</td></tr>

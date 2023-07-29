@@ -21,7 +21,7 @@ ease of use. But if you prefer not to work with the Keras API, or you need
 access to the lower-level text processing ops, you can use TensorFlow Text
 directly.
 
-## Keras NLP
+## KerasNLP
 
 The easiest way to get started processing text in TensorFlow is to use
 [KerasNLP](https://keras.io/keras_nlp/). KerasNLP is a natural language
@@ -86,9 +86,6 @@ processing:
   * [Basic text classification](https://www.tensorflow.org/tutorials/keras/text_classification)
   * [Text classification with TensorFlow Hub: Movie reviews](https://www.tensorflow.org/tutorials/keras/text_classification_with_hub)
   * [Load text](https://www.tensorflow.org/tutorials/load_data/text)
-  * [word2vec](https://www.tensorflow.org/tutorials/text/word2vec)
-  * [Warm-start embedding layer matrix](https://www.tensorflow.org/tutorials/text/warmstart_embedding_matrix)
-  * [Image captioning with visual attention](https://www.tensorflow.org/tutorials/text/image_captioning)
 * [Google Machine Learning: Text Classification guide](https://developers.google.com/machine-learning/guides/text-classification):
   A step-by-step introduction to text classification. This is a good place to
   start if you're new to machine learning.
